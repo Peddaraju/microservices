@@ -1,0 +1,14 @@
+check the version of docker in local
+>docker -v
+
+build the project as docker the docker image
+>docker build -f Dockerfile -t eureka-server .
+
+get the images created in docker
+>docker images
+
+run the docker the docker image
+>docker run -p 8761:8761 eureka-server
+
+get the running containers 
+>docker ps
