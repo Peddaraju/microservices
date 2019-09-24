@@ -15,6 +15,6 @@ public class MessageRestController {
 	
 	@GetMapping("/msg")
 	public String msg() {
-		return this.msg;
+		return this.msg+"raju";
 	}
 }
