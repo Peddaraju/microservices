@@ -12,3 +12,8 @@ The following guides illustrate how to use some features concretely:
 
 * [Centralized Configuration](https://spring.io/guides/gs/centralized-configuration/)
 
+
+### Testing
+http://localhost:8888/limits-service/default
+
+
