@@ -18,3 +18,13 @@ The following guides illustrate how to use some features concretely:
 * [Building REST services with Spring](https://spring.io/guides/tutorials/bookmarks/)
 * [Building a RESTful Web Service with Spring Boot Actuator](https://spring.io/guides/gs/actuator-service/)
 
+### URL's
+http://localhost:8000/currency-exchange/from/USD/to/INR
+
+http://localhost:8100/currency-conversion/from/USD/to/INR/quantity/10
+
+
+insert into currency_exchange (id, currency_from, currency_to, conversion_multiple, environment) values (10001, 'USD', 'INR', 65, ''');
+insert into currency_exchange (id, currency_from, currency_to, conversion_multiple, environment) values (10002, 'EUR', 'INR', 75, ''');
+insert into currency_exchange (id, currency_from, currency_to, conversion_multiple, environment) values (10003, 'AUD', 'INR', 67, ''');
+
