@@ -1,6 +1,6 @@
 package com.app.rest.repository;
 
-import com.app.rest.model.Question;
+import com.app.rest.entity.Question;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

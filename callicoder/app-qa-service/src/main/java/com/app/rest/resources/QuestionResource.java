@@ -1,15 +1,19 @@
 package com.app.rest.resources;
 
 import com.app.rest.exception.ResourceNotFoundException;
-import com.app.rest.model.Question;
+import com.app.rest.entity.Question;
 import com.app.rest.repository.QuestionRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -21,6 +25,16 @@ public class QuestionResource {
     private QuestionRepository questionRepository;
 
     @GetMapping("/questions")
+    public List<Question> getAllQuestions() {
+        List<Question> questionPage = questionRepository.findAll();
+        if (questionPage.isEmpty()) {
+            log.error("Question not found id "+questionPage.size());
+            throw new ResourceNotFoundException("Question not found id "+questionPage.size());
+        }
+        return questionPage;
+    }
+
+    @GetMapping("/questions/pageable")
     public Page<Question> getQuestions(Pageable pageable) {
 
         Page<Question> questionPage = questionRepository.findAll(pageable);
@@ -29,6 +43,30 @@ public class QuestionResource {
             throw new ResourceNotFoundException("Question not found id "+questionPage.getNumberOfElements());
         }
         return questionPage;
+    }
+
+    @GetMapping("/questions/heteoas")
+    public EntityModel<List<Question>> getQuestionsWithURLs() {
+        List<Question> questionPage = questionRepository.findAll();
+        if (questionPage.isEmpty()) {
+            log.error("Question not found id "+questionPage.size());
+            throw new ResourceNotFoundException("Question not found id "+questionPage.size());
+        }
+        return EntityModel.of(questionPage);
+    }
+
+    @GetMapping("/questions/{questionId}")
+    public EntityModel<Question> getQuestionsById(@PathVariable Long questionId) {
+        Optional<Question> questionPage = questionRepository.findById(questionId);
+        if (questionPage.isEmpty()) {
+            throw new ResourceNotFoundException("Question not found id ");
+        }
+
+        EntityModel<Question> questionEntityModel = EntityModel.of(questionPage.get());
+        WebMvcLinkBuilder webMvcLinkBuilder = WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(this.getClass()).getAllQuestions());
+        questionEntityModel.add(webMvcLinkBuilder.withRel("all-questions"));
+
+        return questionEntityModel;
     }
 
     @PostMapping("/questions")
@@ -58,6 +96,22 @@ public class QuestionResource {
                         }
                 ).orElseThrow(
                         ()  -> new ResourceNotFoundException("Question not found id" + questionId)
+                );
+    }
+
+    @DeleteMapping("/questions/{questionId}")
+    public ResponseEntity<?> deleteQuestion(@PathVariable Long questionId) {
+        return questionRepository.findById(questionId)
+                .map(
+                        question -> {
+                            questionRepository.delete(question);
+                            return ResponseEntity.ok().build();
+                        }
+                ).orElseThrow(
+                        () -> {
+                            log.info("Question id not found:"+questionId);
+                            throw new ResourceNotFoundException("question not found");
+                        }
                 );
     }
 }

@@ -1,4 +1,4 @@
-package com.app.rest.model;
+package com.app.rest.entity;
 
 import lombok.Data;
 
@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 @Entity
 @Table(name = "questions")
 @Data
-public class Question extends AuditModel{
+public class Question extends AuditModel {
     @Id
     @GeneratedValue(generator = "question_generator")
     @SequenceGenerator(
