@@ -1,10 +1,9 @@
 package com.app.rest.resources;
 
-import com.app.rest.exception.ResourceNotFoundException;
 import com.app.rest.entity.Question;
+import com.app.rest.exception.ResourceNotFoundException;
 import com.app.rest.repository.QuestionRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,6 +11,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
