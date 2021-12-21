@@ -1,18 +1,25 @@
 package com.app.tutorial.model;
 
 import lombok.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
 
 @Data
 @RequiredArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "tutorial")
+/*@Entity                       // H2 database
+@Table(name = "tutorial")*/
+@Document(collection = "tutorials")
 public class Tutorial {
 
+    @Transient
+    public static final String SEQUENCE_NAME = "tutorials_sequence";
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+    @NonNull
     private long id;
 
     @NonNull

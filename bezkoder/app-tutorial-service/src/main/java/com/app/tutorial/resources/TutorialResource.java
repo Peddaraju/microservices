@@ -1,6 +1,7 @@
 package com.app.tutorial.resources;
 
 import com.app.tutorial.model.Tutorial;
+import com.app.tutorial.repository.SequenceDao;
 import com.app.tutorial.repository.TutorialRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -55,11 +56,20 @@ public class TutorialResource {
 
     }
 
+    @Autowired
+    private SequenceDao sequenceDao;
+
+    private static final String HOSTING_SEQ_KEY = "tutorials";
+
     @PostMapping("/tutorials")
     public ResponseEntity<Tutorial> createTutorial(@RequestBody Tutorial tutorial) {
         try {
             Tutorial _tutorial = tutorialRepository
-                    .save(new Tutorial(tutorial.getTitle(), tutorial.getDescription(), tutorial.isPublished()));
+                    .save(new Tutorial(
+                            sequenceDao.getNextSequenceId(HOSTING_SEQ_KEY),
+                            tutorial.getTitle(),
+                            tutorial.getDescription(),
+                            tutorial.isPublished()));
             return new ResponseEntity<>(_tutorial, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
