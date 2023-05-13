@@ -3,6 +3,7 @@ package com.demo.producer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -14,8 +15,11 @@ public class KafkaProducer {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
+    @Value("${demo.kafka.topic}")
+    private String topicName;
+
     public void sendMessage(String message){
         LOGGER.info(String.format("Message sent -> %s", message));
-        kafkaTemplate.send("topicraj_1", message);
+        kafkaTemplate.send(topicName, message);
     }
 }
