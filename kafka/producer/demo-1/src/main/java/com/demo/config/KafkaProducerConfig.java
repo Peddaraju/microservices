@@ -54,7 +54,7 @@ public class KafkaProducerConfig {
         config.put(KafkaAvroSerializerConfig.BASIC_AUTH_CREDENTIALS_SOURCE, "USER_INFO");
         config.put(KafkaAvroSerializerConfig.USER_INFO_CONFIG, basicAuthUserInfo);
 
-        config.put(KafkaAvroSerializerConfig.AUTO_REGISTER_SCHEMAS, true);
+        config.put(KafkaAvroSerializerConfig.AUTO_REGISTER_SCHEMAS, false);
         return new DefaultKafkaProducerFactory<>(config);
     }
 
