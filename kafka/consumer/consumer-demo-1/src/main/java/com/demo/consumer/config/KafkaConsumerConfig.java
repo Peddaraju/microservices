@@ -1,6 +1,10 @@
 package com.demo.consumer.config;
 
 import com.demo.beans.Greeting;
+import demo.kafka.event.PaymentSent;
+import io.confluent.kafka.serializers.KafkaAvroDeserializer;
+import io.confluent.kafka.serializers.KafkaAvroDeserializerConfig;
+import io.confluent.kafka.serializers.KafkaAvroSerializerConfig;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -11,6 +15,7 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.HashMap;
@@ -35,6 +40,12 @@ public class KafkaConsumerConfig {
     @Value("${spring.demo.kafka.security.protocol}")
     private String securityProtocol;
 
+    @Value("${spring.kafka.demo.schema.registry.url}")
+    private String schemaRegistryUrl;
+
+    @Value("${spring.kafka.demo.basic.auth.user.info}")
+    private String basicAuthUserInfo;
+
 
     private Map<String, Object> getProperties() {
         Map<String, Object> props = new HashMap<>();
@@ -56,6 +67,21 @@ public class KafkaConsumerConfig {
         return new DefaultKafkaConsumerFactory<>(getProperties(), keyDeserializer, valueDeserializer);
     }
 
+    private ConsumerFactory<String, PaymentSent> consumerFactory() {
+        Map<String, Object> config = getProperties();
+        config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
+        config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
+        config.put(ErrorHandlingDeserializer.KEY_DESERIALIZER_CLASS, StringDeserializer.class);
+        config.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, KafkaAvroDeserializer.class);
+        config.put(KafkaAvroDeserializerConfig.SCHEMA_REGISTRY_URL_CONFIG, schemaRegistryUrl);
+        config.put(KafkaAvroSerializerConfig.BASIC_AUTH_CREDENTIALS_SOURCE, "USER_INFO");
+        config.put(KafkaAvroSerializerConfig.USER_INFO_CONFIG, basicAuthUserInfo);
+        config.put(KafkaAvroDeserializerConfig.AUTO_REGISTER_SCHEMAS, false);
+        config.put(KafkaAvroDeserializerConfig.SPECIFIC_AVRO_READER_CONFIG, true);
+
+        return new DefaultKafkaConsumerFactory<>(config);
+    }
+
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
@@ -67,6 +93,13 @@ public class KafkaConsumerConfig {
     public ConcurrentKafkaListenerContainerFactory<String, Greeting> greetingKafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, Greeting> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory(new StringDeserializer(), new JsonDeserializer(Greeting.class)));
+        return factory;
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, PaymentSent> paymentKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, PaymentSent> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(consumerFactory());
         return factory;
     }
 }
