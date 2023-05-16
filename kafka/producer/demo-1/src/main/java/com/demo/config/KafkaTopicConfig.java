@@ -16,6 +16,9 @@ public class KafkaTopicConfig {
     @Value("${demo.kafka.topic}")
     private String topic;
 
+    @Value("${demo.kafka.avro.topic}")
+    private String avroTopic;
+
     @Value("${spring.demo.kafka.sasl.mechanism}")
     private String saslMechanism;
 
@@ -36,5 +39,10 @@ public class KafkaTopicConfig {
     @Bean
     public NewTopic topic1() {
         return new NewTopic(topic, 3, (short) 3);
+    }
+
+    @Bean
+    public NewTopic avroTopic() {
+        return new NewTopic(avroTopic, 3, (short)3);
     }
 }
